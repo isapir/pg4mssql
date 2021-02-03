@@ -193,7 +193,6 @@
 					</div>
 					<ul style="font-size: 2rem;">
 						<li>Igal Sapir</li>
-						<li class="mt-1">System / Software Architect</li>
 						<li class="mt-1">20+ years of B2B &amp; B2C applications</li>
 						<li class="mt-1">Used many different DBMSs
 							<ul>
@@ -204,7 +203,8 @@
 							</ul>
 						</li>
 						<li class="mt-1">Open Source Advocate, Committer</li>
-						<li class="mt-1">Focus on Performance, Scalability, and Security</li>
+						<li class="mt-1">Focus on Scalability and Security</li>
+						<li class="mt-1">System / Software Architect at DistroKid</li>
 					</ul>
 					<div style="margin-top: 3rem; font-size: 1.5rem;">
 						<img src="res/images/linkedin-logo.png" alt="" class="x40" style="vertical-align: sub;">
@@ -483,15 +483,14 @@
 								<li>Lots of new features!</li>
 								<li>At least 5 years support</li>
 								<li>Data files are not backward compatible</li>
-								<li>Two part major versions until 9.6, e.g. 9.4, 9.5, 9.6</li>
+								<li>Two part major versions until 9.6</li>
 								<li>One part major versions since 10, e.g. 10, 11, 12, 13</li>
 							</ul>
 						</li>
 						<li class="mt-2">Usually a few Minor Updates throughout the year
 							<ul>
 								<li>No new features</li>
-								<li>Bug fixes</li>
-								<li>Security patches <sub>(rare)</sub></li>
+								<li>Bug fixes and Security patches <sub>(rare)</sub></li>
 								<li>Data files are backward compatible
 									<sub>(rare exceptions)</sub>
 								</li>
@@ -896,7 +895,11 @@ CREATE COLLATION ignore_accents  (provider=icu, <em>locale='und-u-ks-level1-kc-t
 				<section>
 					<div>Notable Differences from SQL Server</div>
 					<ul>
-						<li class="mt-2">String concatenation operator is <em>||</em></li>
+						<li class="mt-2">String concatenation operator is <em>||</em>
+							<ul>
+								<li>or use the functions <em>concat()</em> and <em>concat_ws()</em></li>
+							</ul>
+						</li>
 						<li class="mt-2">Data Types</li>
 						<li class="mt-2">Use <em>LIMIT</em> instead of <em>TOP</em></li>
 						<li class="mt-2">pl/pgSQL is not T-SQL</li>
@@ -1104,10 +1107,15 @@ java -jar &lt;path-to-m2pg.jar&gt; &lt;command&gt; &lt;path-to-m2pg-config-file&
 						<div>
 							Let's run the <em>DDL</em> command:
 						</div>
-						<pre><code class="bash" data-trim data-noescape>java -jar Migrate2Postgres-1.0.18-dist/lib/Migrate2Postgres-1.0.18.jar <em>ddl</em> MigrateAdventureWorks.m2pg</code></pre>
+						<pre><code class="bash" data-trim data-noescape>java -jar lib/Migrate2Postgres-1.0.18.jar <em>ddl</em> ../MigrateAdventureWorks.m2pg</code></pre>
 						
-						<div style="font-size: 1.75rem;">
-							Running the test cases should now find schema objects but not data
+						<div class="fragment" style="font-size: 1.75rem;">
+							<div>
+								We can review/modify/rerun the generated file
+							</div>
+							<div>
+								Running the test cases should now find schema objects but not data
+							</div>
 						</div>
 					</div>
 
@@ -1115,7 +1123,7 @@ java -jar &lt;path-to-m2pg.jar&gt; &lt;command&gt; &lt;path-to-m2pg-config-file&
 						<div class="mt-4">
 							Let's run the <em>DML</em> command:
 						</div>
-						<pre><code class="bash" data-trim data-noescape>java -jar Migrate2Postgres-1.0.18-dist/lib/Migrate2Postgres-1.0.18.jar <em>dml</em> MigrateAdventureWorks.m2pg</code></pre>
+						<pre><code class="bash" data-trim data-noescape>java -jar lib/Migrate2Postgres-1.0.18.jar <em>dml</em> MigrateAdventureWorks.m2pg</code></pre>
 						
 						<div style="font-size: 1.75rem;">
 							Running the test cases should now find the data
