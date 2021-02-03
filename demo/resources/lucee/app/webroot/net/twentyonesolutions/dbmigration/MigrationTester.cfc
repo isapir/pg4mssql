@@ -67,10 +67,10 @@ component {
          * check no errors in execution
          */
         if (!expected.ok)
-            messages.append("Source execution failed: #expected.error.message#");
+            messages.append("Source: #expected.error.message#");
         
         if (!received.ok)
-            messages.append("Target execution failed: #received.error.message#");
+            messages.append("Target: #received.error.message#");
         
         if (isEmpty(messages)) {
             

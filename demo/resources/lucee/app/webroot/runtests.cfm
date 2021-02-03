@@ -39,6 +39,8 @@
                 #result.messages.toList("<br>")#
             </div>
         </div>
+
+        <cfflush>
     </cfloop>
 
     <h3 class="mt-2">

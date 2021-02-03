@@ -183,26 +183,28 @@
 				<section>
 					<h3>$ whoami</h3>
 					<div style="float: left;">
-						<br>
 						<img src="res/images/is-headshot-480x480.jpg" alt="" class="x128">
 						<br>
 						<img src="res/images/tomcat-logo-tm.svg" alt="" class="x128">
 						<br>
 						<img src="res/images/lucee-logo.png" alt="" class="x96">
+						<br>
+						<img src="res/images/distrokid-gremlin.png" alt="" class="x128 mt-3">
 					</div>
 					<ul style="font-size: 2rem;">
 						<li>Igal Sapir</li>
-						<li class="mt-1">System / Software Architect based in L.A.</li>
+						<li class="mt-1">System / Software Architect</li>
 						<li class="mt-1">20+ years of B2B &amp; B2C applications</li>
-						<li class="mt-1">Used many different DBMSs (SQL Server since 7.0)</li>
+						<li class="mt-1">Used many different DBMSs
+							<ul>
+								<li>SQL Server (since 7.0)</li>
+								<li>Postgres</li>
+								<li>MySQL</li>
+								<li>others</li>
+							</ul>
+						</li>
 						<li class="mt-1">Open Source Advocate, Committer</li>
-						<li class="mt-1">I help organizations worldwide with</li>
-						<ul>
-							<li class="mt-1">Performance, Scalability, and Security</li>
-							<li class="mt-1">Save $$ by adopting FOSS and improving efficiency</li>
-							<li class="mt-1">Ad-hoc Development</li>
-							<li class="mt-1">Consultation</li>
-						</ul>
+						<li class="mt-1">Focus on Performance, Scalability, and Security</li>
 					</ul>
 					<div style="margin-top: 3rem; font-size: 1.5rem;">
 						<img src="res/images/linkedin-logo.png" alt="" class="x40" style="vertical-align: sub;">
@@ -925,6 +927,16 @@ true                       |
 				</section>
 
 				<section>
+					Example function conversion
+
+					<div style="font-size: 1.5rem;">SQL Server</div>
+					<img src="res/images/create-function-mssql.png">
+					
+					<div style="font-size: 1.5rem;">Postgres:</div>
+					<img src="res/images/create-function-postgres.png">
+				</section>
+
+				<section>
 					<h3>Migration Considerations</h3>
 					<ul>
 						<li>Downtime allowed?</li>
@@ -1006,20 +1018,25 @@ true                       |
 				<section>
 					<h3>The Migrate2Postgres Tool</h3>
 					<div>
-						<ul style="font-size: 2.25rem;">
-							<li>Requires Java 8 or later</li>
-							<li class="mt-3">Supports 3 commands:
+						<ul style="font-size: 2.0rem;">
+							<li>Supports 3 commands:
 								<ul>
-									<li class="mt-2">DDL
+									<li class="mt-2"><em style="color: #a6e22e;">DDL</em>
 										<div style="font-size: 1.75rem;">Generates DDL script; executes if target database is empty</div>
 									</li>
-									<li class="mt-2">DML
+									<li class="mt-2"><em style="color: #a6e22e;">DML</em>
 										<div style="font-size: 1.75rem;">Copies data from source to target database</div>
 									</li>
-									<li class="mt-2">ALL
+									<li class="mt-2"><em style="color: #a6e22e;">ALL</em>
 										<div style="font-size: 1.75rem;">Runs the DDL command and if executed runs the DML command</div>
 									</li>
 								</ul>
+							</li>
+							<li class="mt-3">Requires Java 8 or later
+								<br>
+								<pre><code class="bash" data-noescape="" data-trim="">
+java -jar &lt;path-to-m2pg.jar&gt; &lt;command&gt; &lt;path-to-m2pg-config-file&gt;
+								</code></pre>
 							</li>
 						</ul>
 					</div>
@@ -1069,12 +1086,46 @@ true                       |
 
 					<ul>
 						To demonstrate TDD, I wrote:
-						<li>A simple test suite</li>
-						<li>Sample test cases</li>
+						<li>A simple test suite runner</li>
+						<li>Sample <a href="https://github.com/isapir/pres-pg4mssql/tree/main/demo/resources/lucee/app/webroot/testcases" target="_blank">test cases</a></li>
+						<li>We should see that test cases fail pre-migration</li>
+						<li>We should see that test cases pass post-migration</li>
 					</ul>
 
 					<div class="mt-4">
 						<a href="/runtests.cfm" target="_blank">/runtests.cfm</a>
+					</div>
+				</section>
+
+				<section>
+					<h3>Demo Time!</h3>
+
+					<div class="fragment">
+						<div>
+							Let's run the <em>DDL</em> command:
+						</div>
+						<pre><code class="bash" data-trim data-noescape>java -jar Migrate2Postgres-1.0.18-dist/lib/Migrate2Postgres-1.0.18.jar <em>ddl</em> MigrateAdventureWorks.m2pg</code></pre>
+						
+						<div style="font-size: 1.75rem;">
+							Running the test cases should now find schema objects but not data
+						</div>
+					</div>
+
+					<div class="fragment">
+						<div class="mt-4">
+							Let's run the <em>DML</em> command:
+						</div>
+						<pre><code class="bash" data-trim data-noescape>java -jar Migrate2Postgres-1.0.18-dist/lib/Migrate2Postgres-1.0.18.jar <em>dml</em> MigrateAdventureWorks.m2pg</code></pre>
+						
+						<div style="font-size: 1.75rem;">
+							Running the test cases should now find the data
+						</div>
+					</div>
+
+					<div class="fragment mt-3">
+						Run post migration scripts, e.g. create functions
+						<br>
+						(can all be done in one step; broken for demo only)
 					</div>
 				</section>
 
