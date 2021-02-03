@@ -1,0 +1,100 @@
+/**
+ * This is an example config file for migrating the sample AdventureWorks database from MS SQL Server to Postgres
+ * by using the template ms-sql-server.conf, which makes this file much smaller and simpler.
+ * See https://github.com/Microsoft/sql-server-samples/tree/master/samples/databases/adventure-works
+ */
+{
+    /**
+     * Migration project name
+     */
+    "name": "AdventureWorks",
+    
+    /**
+     * Template that will be used for DDL and DML settings. The settings from this file
+     * will be merged with the template's settings.  If a template is not used
+     * then all of the settings must be in this config file.
+     *
+     * The ms-sql-server template can be seen at 
+     * https://github.com/isapir/Migrate2Postgres/blob/master/src/main/resources/templates/ms-sql-server.conf
+     */
+    "template": "ms-sql-server",
+    
+    /**
+     * The information_schema.database_name value is used by information_schema.query in the 
+     * ms-sql-server template to determine which objects to migrate
+     */
+    "information_schema": {
+        "database_name": "AdventureWorks"
+    },
+    
+    /**
+     * Defines the available database connections.  Each connection must
+     * have a connectionString key.  Other keys are optional and will be
+     * added to the Properties object when connecting to the database.
+     */
+    "connections": {
+
+        /**
+         * Source (SQL Server) database connection
+         */
+        "source": {
+            "connectionString": "jdbc:sqlserver://localhost:1433",
+            "user": "pgmigrator",
+            "password": "PostgresFTW!",
+            
+            /** example referencing another key instead of repeating it */
+            "databaseName": "%information_schema.database_name%"
+        },
+        
+        /**
+         * Target (Postgres) database connection
+         */
+        "target": {
+            "connectionString": "jdbc:postgresql://localhost:5432/adventure_works",
+            "user": "postgres",
+            "password": "PostgresFTW!"
+        }
+    },
+    
+    /**
+     * Mappings for schema names from source to target, e.g. dbo -> public
+     */
+    "schema_mapping": {
+        "dbo": "public",
+        "HumanResources": "hr"
+    },
+    
+    /**
+     * Mappings for table names from source to target, runs before table_transform
+     */
+    "table_mapping": {
+        "ProductModelProductDescriptionCulture": "ProductModelProdDescCulture"
+    },
+    
+    /**
+     * Mappings for column names in case the source db has keyword names like "group"
+     * or "primary", or has a space that we want to remove.
+     * runs before column_transform
+     */
+    "column_mapping": {
+        "Database Version": "db_version",
+        "group": "group_name",
+        "primary": "is_primary"
+    },
+    
+    /**
+     * Transform tables and columns from MyTableName to my_table_name
+     */
+    "table_transform": "camel_to_snake_case",
+    "column_transform": "camel_to_snake_case",
+
+    /**
+     * DML (data copy) phase settings
+     */
+    "dml": {
+        /**
+         * Number of concurrent threads (connections)
+         */
+        "threads": 4
+    }
+}

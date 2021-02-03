@@ -1,0 +1,92 @@
+version: "3"
+
+services:
+
+  postgres:
+    image: "postgres"
+    environment:
+      - POSTGRES_PASSWORD=PostgresFTW!
+      - POSTGRES_DB=pgconf
+      - PGDATA=/pgdata
+    volumes:
+      - "./resources/postgres/init-scripts:/docker-entrypoint-initdb.d"
+    ports:
+      - "5432:5432"
+
+  mssql:
+    image: "mcr.microsoft.com/mssql/server:2019-latest"
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=PostgresFTW!
+      - MSSQL_PID=Express
+      - MSSQL_AGENT_ENABLED=true
+    volumes:
+      - "./resources/mssql/backups:/var/backups"
+      - "./resources/mssql/init-scripts:/var/scripts"
+    ports:
+      - "1433:1433"
+    command:
+      - /bin/bash
+      - -c
+      - |
+        # taken from https://github.com/confluentinc/demo-scene/blob/master/mssql-to-kafka-with-ksqldb/docker-compose.yml
+        #        and https://github.com/microsoft/mssql-docker/issues/11
+        # Launch MSSQL and send to background
+        /opt/mssql/bin/sqlservr &
+        pid=$$!
+        # Wait for the SQL Server Agent to be available
+        # We're assuming here that if the agent is available then MS SQL is too.
+        echo "Waiting for the SQL Server Agent to be available ⏳"
+        # Wait for it to begin start up first so that the log file is there
+        while [ ! -f /var/opt/mssql/log/sqlagent.out ]
+        do
+          sleep 2
+        done
+        while :
+          do
+            # sqlagent.out is a binary file, sed then removes all non-ascii characters so that grep can correctly match
+            # Thanks to this snippet for helping me out here https://github.com/bitwarden/server/pull/302/files#diff-dcd8a73331aba627440c247763086b99R181-R182
+            sed 's/[^a-zA-Z ]//g' /var/opt/mssql/log/sqlagent.out | \
+              tr '\n' ' ' |\
+              grep -iq "Waiting for SQL Server to start .* SQLServerAgent service successfully started"
+            sqlagentstatus=$$?
+            echo -e $$(date) " sqlagentstatus grep result: " $$sqlagentstatus " (waiting for 0)"
+            if [ $$sqlagentstatus -eq 0 ] ; then
+              break
+            fi
+            sleep 5
+          done
+        # Run every script in /var/scripts
+        # TODO set a flag so that this is only done once on creation,
+        #      and not every time the container runs
+        for foo in /var/scripts/*.sql
+          do /opt/mssql-tools/bin/sqlcmd -U sa -P $$SA_PASSWORD -l 30 -e -i $$foo
+        done
+        # So that the container doesn't shut down, sleep this thread
+        # trap SIGTERM and send same to sqlservr process for clean shutdown
+        trap "kill -15 $$pid" SIGTERM
+        # Wait on the sqlserver process
+        pid=$$!
+        wait $$pid
+        exit 0
+
+  lucee:
+    image: "isapir/lucee-538"
+    environment:
+      - LUCEE_FULL_NULL_SUPPORT=true
+    ports:
+      - "8080:8080"
+    volumes:
+      - "./resources/lucee/app:/srv/www/app"
+      - "../slides:/srv/www/app/webroot/slides"
+    #command:
+    #  - /bin/bash
+    #  - -c
+    #  - sleep infinity
+
+networks:
+  default:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.16.1.0/24
